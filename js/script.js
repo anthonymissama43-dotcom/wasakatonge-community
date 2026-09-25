@@ -336,7 +336,7 @@ document.addEventListener("DOMContentLoaded", () => {
         form.reset();
     };
 
-    form.addEventListener("submit", (event) => {
+    form.addEventListener("submit", async (event) => {
 
         event.preventDefault();
 
@@ -347,6 +347,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const submitButton =
             form.querySelector(".community-submit");
+        const status = document.getElementById("communityFormStatus");
 
         if (submitButton) {
             submitButton.disabled = true;
@@ -354,20 +355,57 @@ document.addEventListener("DOMContentLoaded", () => {
                 "aria-busy",
                 "true"
             );
+            if (status) {
+                status.textContent = "Submitting your application...";
+                status.style.color = "var(--accent)";
+            }
         }
 
-        window.setTimeout(() => {
+        const formData = {
+            name: form.elements.name.value.trim(),
+            phone: form.elements.phone.value.trim(),
+            email: form.elements.email.value.trim(),
+            contribution: form.elements.contribution.value,
+            interest: form.elements.interest.value,
+            message: form.elements.message.value.trim()
+        };
 
+        try {
+            const response = await fetch("https://script.google.com/macros/s/AKfycbwOGmYiN-JwW-c218GgsECQNIQcD29kY_JnxKv6Uj774zeKFtsZtCP2Gj3ZQU3eRuHn/exec", {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            });
+
+            if (response.ok || response.status === 200) {
+                if (submitButton) {
+                    submitButton.disabled = false;
+                    submitButton.removeAttribute(
+                        "aria-busy"
+                    );
+                }
+                if (status) {
+                    status.textContent = "";
+                }
+                showSuccess();
+            } else {
+                throw new Error("Submission failed");
+            }
+        } catch (error) {
             if (submitButton) {
                 submitButton.disabled = false;
                 submitButton.removeAttribute(
                     "aria-busy"
                 );
             }
-
-            showSuccess();
-
-        }, 350);
+            if (status) {
+                status.textContent = "Failed to submit. Please try again.";
+                status.style.color = "#ff6b6b";
+            }
+            console.error("Form submission error:", error);
+            logError(formData, error);
+        }
 
     });
 
@@ -383,4 +421,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 })();
+
+/* =========================================================
+   WASAKATONGE — ERROR LOGGING FOR DEVELOPMENT
+========================================================= */
+
+const logError = async (formData, error) => {
+    const logEntry = {
+        timestamp: new Date().toISOString(),
+        formData: {
+            name: formData.name,
+            phone: formData.phone,
+            email: formData.email,
+            contribution: formData.contribution,
+            interest: formData.interest,
+            message: formData.message.substring(0, 200)
+        },
+        error: error.toString(),
+        userAgent: navigator.userAgent,
+        url: window.location.href
+    };
+
+    try {
+        if (!window.location.hostname.includes("wasakatonge")) {
+            await fetch("/.logs/submit-error", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(logEntry)
+            });
+        }
+    } catch (logError) {
+        console.warn("Could not log error:", logError);
+    }
+};
 
