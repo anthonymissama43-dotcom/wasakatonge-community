@@ -370,28 +370,25 @@ document.addEventListener("DOMContentLoaded", () => {
             message: form.elements.message.value.trim()
         };
 
-        try {
-            const response = await fetch("https://script.google.com/macros/s/AKfycbwOGmYiN-JwW-c218GgsECQNIQcD29kY_JnxKv6Uj774zeKFtsZtCP2Gj3ZQU3eRuHn/exec", {
+try {
+            await fetch("https://script.google.com/macros/s/AKfycbwOGmYiN-JwW-c218GgsECQNIQcD29kY_JnxKv6Uj774zeKFtsZtCP2Gj3ZQU3eRuHn/exec", {
                 method: "POST",
                 mode: "no-cors",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData)
             });
 
-            if (response.ok || response.status === 200) {
-                if (submitButton) {
-                    submitButton.disabled = false;
-                    submitButton.removeAttribute(
-                        "aria-busy"
-                    );
-                }
-                if (status) {
-                    status.textContent = "";
-                }
-                showSuccess();
-            } else {
-                throw new Error("Submission failed");
+            // no-cors mode returns opaque response — assume success if fetch completes
+            if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.removeAttribute(
+                    "aria-busy"
+                );
             }
+            if (status) {
+                status.textContent = "";
+            }
+            showSuccess();
         } catch (error) {
             if (submitButton) {
                 submitButton.disabled = false;
@@ -454,4 +451,3 @@ const logError = async (formData, error) => {
         console.warn("Could not log error:", logError);
     }
 };
-
