@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+
+# Build artifacts
+dist/
+build/
+
+# Log files
+logs/
+logs/*.log
+.logs/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Screenshots and images
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# Environment files
+.env
+.env.local
+.env.development.local
+
+# Temp files
+*.tmp
+*.temp
+tmp/
+temp/
+google-apps-script.js
+GOOGLE_SHEETS_DEPLOYMENT.md
