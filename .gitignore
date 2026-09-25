@@ -37,3 +37,5 @@ Thumbs.db
 *.temp
 tmp/
 temp/
+google-apps-script.js
+GOOGLE_SHEETS_DEPLOYMENT.md
